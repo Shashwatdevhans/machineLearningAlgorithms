@@ -1,1 +1,91 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+Trmt="#########################"
+"""Loading the CSV file through pandas taking the values only"""
+def Load_csv(data="Data.csv"):
+	CSV=pd.read_csv(data)
+	x=CSV.iloc[:,:1].values
+	y=CSV.iloc[:,1:].values
+	# print("Independant Year of experiance:- \n",x)
+	# print("Dependant Salary nagociated:- \n",y)
+	return x,y
+def MissingData():
+	''' Alays work for numerical values '''
+	x=Load_csv()[0]
+	from sklearn.impute import SimpleImputer
+	imputer = SimpleImputer(missing_values=np.nan, strategy='mean')
+	imputer.fit(x[:, 1:3])
+	x[:, 1:3] = imputer.transform(x[:, 1:3])
+	return x
+def OneHoteEncoding():
+	x = MissingData()
+	from sklearn.compose import ColumnTransformer as CT
+	from sklearn.preprocessing import OneHotEncoder"""Find the repeated value and convert the count with binary bit constant"""
+	Cat_data = CT(transformers=[('encoder', OneHotEncoder(), [0])], remainder='passthrough')
+	x = np.array(Cat_data.fit_transform(x))
+	print(Trmt)
+	print(x)
+	return x
+def LebelEncoding():
+	"used for different data on the cascade for differentiation on given output within the cascade "
+	"""need not to transform with columns """
+	"""But identifies the options it uses the same method for without transforming the column """
+	y = Load_csv()[1]
+	from sklearn.preprocessing import LabelEncoder as LE
+	le = LE()
+	y = le.fit_transform(y)
+	print(y)
+	return y
+def DataSplit():
+	x = OneHoteEncoding()
+	y = LebelEncoding()
+	from sklearn.model_selection import train_test_split as TTS
+	x_train, x_test, y_train, y_test = TTS(x, y, test_size=0.2, random_state=1)
+	print(Trmt)
+	print(x_train)
+	print(Trmt)
+	print(x_test)
+	print(Trmt)
+	print(y_train)
+	print(Trmt)
+	print(y_test)
+	return x_train,x_test,y_train,y_test
+def Scaling():
+	from sklearn.preprocessing import StandardScaler as SS
+	sc = SS()
+	ext = DataSplit()
+	x_train = ext[0]
+	x_test = ext[1]
+	# print("x_train is printed:-\n",x_train)
+	# print("x_test is printed:-\n",x_test)
+	x_train[:, 3:] = sc.fit_transform(x_train[:,3:])  # Hear we use the Train set to 'fit' caus it have more no of data compare to Test set, and then Transform
+	x_test[:, 3:] = sc.transform(x_test[:,3:])  # Transform the test set by same mean and Standerd Deviation created by Train set so that the scaling will be same for test and train set
+	
+	print(Trmt)
+	print(x_train)
+	print(Trmt)
+	print(x_test)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
